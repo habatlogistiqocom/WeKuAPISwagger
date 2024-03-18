@@ -1,0 +1,428 @@
+openapi: 3.0.1
+info:
+  title: WeKuAPI
+  version: '1.0'
+  description: >-
+
+
+    - Go to [Swagger Editor](https://editor.swagger.io/?url=https://raw.githubusercontent.com/klodjanmata/WekuAPI/main/WekuAPI.yaml)
+
+     An API, or Application Programming Interface, is a set of protocols,
+      routines, and tools that enable different software applications to
+      communicate and exchange data with each other. It defines how software
+      components should interact and helps to simplify software development by
+      abstracting the underlying implementation. APIs are essential for building
+      complex and interconnected software systems.
+    
+       ## Contact Us
+
+
+      If you have problems or questions, please read the following information:
+
+
+      - [FAQ](https://www.logistiqo.com/faq/)
+
+      - [Contact us](https://www.logistiqo.com/contact.php)
+
+
+      To stay informed about the latest developments, you can
+
+
+      - Follow us on [Twitter](https://twitter.com/logistiqo/),
+  contact:
+    email: info@logistiqo.com
+    url: https://www.logistiqo.com/
+servers:
+  - url: https://weku.logistiqo.com/logistiqo/api
+paths:
+  /getReceiving:
+    get:
+      summary: The getReceiving is the RESTful service provided by Logistiqo for the WEKU system that allows TSC to get the received data.
+      operationId: getReceiving
+      description:  >-
+        The he getReceiving is the RESTful service provided by WEKU 
+          system that allows TSC to get the received data.
+      tags:
+        - Receiving
+      parameters:
+        - name: StartTime
+          in: query
+          description: >-
+            Get all received items in an interval specified by StartTime and EndTime.
+          required: true
+          example: '2023-08-22T17:30:08Z'
+          schema:
+            type: string
+        - name: EndTime
+          in: query
+          description: >-
+            Get all received items in an interval specified by StartTime and EndTime.
+          required: true
+          example: '2023-08-22T17:30:08Z'
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Receiving'
+  /getTransfer:
+    get:
+      summary: >-
+        Get WEKU incoming and ongoing inventory movement data only 
+          between WEKU and TSC (Outgoing transaction in WEKU which 
+          has shipment address equal to TSC warehouse) , Quarantined 
+          (shippable location to non-shippable location) 
+      operationId: getTransfer
+      description:  >-
+        Get WEKU incoming and ongoing inventory movement data only 
+          between WEKU and TSC (Outgoing transaction in WEKU which 
+          has shipment address equal to TSC warehouse) , Quarantined 
+          (shippable location to non-shippable location) 
+      tags:
+        - Transfer
+      parameters:
+        - name: LastTime
+          in: query
+          description: >-
+            Time of last successful data receiving ISO 8601 DateTime format 
+          required: true
+          example: '2023-08-22T17:30:08Z'
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transfer'
+  /getShipment:
+    get:
+      summary: >-
+        Get WEKU ongoing inventory movement data (Outgoing transaction in WEKU which has shipment address equal to TSC warehouse) (Complete status data only) 
+      operationId: getShipment
+      description:  >-
+        Get WEKU ongoing inventory movement data (Outgoing transaction in WEKU which has shipment address equal to TSC warehouse) (Complete status data only)
+      tags:
+        - Shipment
+      parameters:
+        - name: StartTime
+          in: query
+          description: >-
+            Time of last successful data receiving.
+          required: true
+          example: '2023-08-22T17:30:08Z'
+          schema:
+            type: string
+        - name: EndTime
+          in: query
+          description: >-
+            Get all received items in an interval specified by StartTime and EndTime.
+          required: true
+          example: '2023-08-22T17:30:08Z'
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shipment'                
+  /postPOData:
+    post:
+      summary: >-
+        Post purchase order unreceived data with promised date to WEKU. 
+      operationId: postPOData
+      description:  >-
+        Post purchase order unreceived data with promised date to WEKU. 
+      tags:
+        - POData
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/POData'
+      responses:
+        'default':
+          description: >-
+            The response includes a response status object containing a 'Message' and a 'Status' wherever   applicable
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ReturnCode:
+                    type: integer
+                    description: >-
+                      0 Fail / 1 Success
+                    example: 1
+                  ReturnMsg:
+                    type: string
+                    description: >-
+                      Response Message
+  /postMoveOrder:
+    post:
+      summary: >-
+        Post move order data
+      operationId: postMoveOrder
+      description:  >-
+        Post move order data
+      tags:
+        - Order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MoveOrder'
+      responses:
+        'default':
+          description: >-
+            The response includes a response status object containing a 'Message' and a 'Status' wherever   applicable
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ReturnCode:
+                    type: integer
+                    description: >-
+                      0 Fail / 1 Success
+                    example: 1
+                  ReturnMsg:
+                    type: string
+                    description: >-
+                      Response Message                      
+           
+components:
+  schemas:
+    Receiving:
+      type: object
+      properties:
+        ReturnCode:
+          type: integer
+          description: >-
+            0 Fail / 1 Success
+          example: 1
+        ReturnMsg:
+          type: string
+          description: >-
+            Response Message
+        Content:
+          type: array
+          items:
+            type: object
+            properties:
+              PONo:
+                type: string
+                description: >-
+                  Purchase No (on Packing Report)
+              ItemNo:
+                type: string
+                description: >-
+                  Item Number
+              Qty:
+                type: integer
+                example: 2
+                description: >-
+                  Quantity
+              Subinventory:
+                type: string
+                example: 01
+                description: >-
+                  Fixed Value for WEKU
+              SerialNumbers:
+                type: array
+                items:
+                  type: string
+                  description: >-
+                    Serial Numbers
+              ReceivedTime:
+                type: string
+                example: '2023-08-22T17:30:08Z'
+                description: >-
+                  WEKU Receiving Time ISO 8601 DateTime format 
+              ReceivedLineID:
+                type: string
+                example: '4151'
+                description: >-
+                  WEKU Receive Line ID Unique key used to determine whether data is duplicate or not.
+    Transfer:
+      type: object
+      properties:
+        ReturnCode:
+          type: integer
+          description: >-
+            0 Fail / 1 Success
+          example: 1
+        ReturnMsg:
+          type: string
+          description: >-
+            Response Message
+        Content:
+          type: array
+          items:
+            type: object
+            properties:
+              MoveOrderNo: 
+                type: string
+                example: '12123'
+              ItemNo:
+                type: string
+                description: >-
+                  Item Number
+              Qty:
+                type: integer
+                example: 2
+                description: >-
+                  Quantity
+              FromSubinventory:
+                type: string
+                example: '01'
+              ToSubinventory:
+                type: string
+                example: '02'
+              TransferTime: 
+                type: string
+                example: '2023-08-22T17:30:08Z'
+              TransferLineID:
+                type: string    
+                example: 'AAAYEVAAJAAAACCAAB'
+    Shipment :
+      type: object
+      properties:
+        ReturnCode:
+          type: integer
+          description: >-
+            0 Fail / 1 Success
+          example: 1
+        ReturnMsg:
+          type: string
+          description: >-
+            Response Message
+        Content:
+          type: array
+          items:
+            type: object
+            properties:
+              DeliveryNo: 
+                type: string
+                example: '12123'
+              ItemNo:
+                type: string
+                description: >-
+                  Item Number
+              Qty:
+                type: integer
+                example: 2
+                description: >-
+                  Quantity
+              Subinventory:
+                type: string
+                example: '01'
+              SerialNos:
+                type: array
+                items:
+                  type: string
+                  description: >-
+                    Serial Numbers
+              ShipmentTime: 
+                type: string
+                example: '2023-08-22T17:30:08Z'
+              ShipmentLineId:
+                type: string    
+                example: 'AAAYEVAAJAAAACCAAB'
+    POData :
+      type: array
+      items:
+        type: object
+        properties:
+          PONo:
+            type: string
+            description: >-
+              Purchase No 
+          ProcessTime:
+            type: string
+            example: '2023-08-22T17:30:08Z'
+            description: >-
+              TSC PO data transfer Time ISO 8601 DateTime format 
+          ItemList:
+            type: array
+            items:
+              type: object
+              properties:
+                POShipmentID: 
+                  type: string
+                  example: '12123'
+                ItemNo:
+                  type: string
+                  description: >-
+                    Item Number
+                Qty:
+                  type: number
+                  example: 2
+                  description: >-
+                    Quantity
+                ArrivalDate: 
+                  type: string
+                  example: '2023-08-22T17:30:08Z'
+    MoveOrder :
+      type: array
+      items:
+        type: object
+        properties:
+          MoveOrderNo:
+            type: string
+            description: >-
+              Move Order No 
+          RequestDate:
+            type: string
+            example: '2023-08-22T17:30:08Z'
+            description: >-
+              TSC Move Order Request Time 
+          ProcessTime:
+            type: string
+            example: '2023-08-22T17:30:08Z'
+            description: >-
+              TSC Move Order data transfer Time 
+          ItemList:
+            type: array
+            items:
+              type: object
+              properties:
+                ItemNo:
+                  type: string
+                  description: >-
+                    Item Number
+                Qty:
+                  type: integer
+                  example: 2
+                  description: >-
+                    Quantity
+                FromSubinventory:
+                  type: string
+                  example: '03'
+                ToSubinventory:
+                  type: string
+                  example: 'WEKU'                
+                CancelFlag: 
+                  type: string
+                  example: 'N'
+                  description: >-
+                    Yes (When move order is cancelled only when PDF has not been issued) 
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+    BasicAuth:
+      type: http
+      scheme: basic
+security:
+  - BasicAuth: []
+  - ApiKeyAuth: []
